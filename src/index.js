@@ -66,14 +66,6 @@ app.post('/account', (req, res) => {
 
 });
 
-app.get('/statement', verifyIfExistsAccountCPF, (req, res) => { 
-
-  const customer = req.customer;
-
-  return res.json(customer.statement);
-
-});
-
 app.post('/deposit', verifyIfExistsAccountCPF, (req, res) => { 
   
   const { description, amount } = req.body;
@@ -114,5 +106,30 @@ app.post('/withdraw', verifyIfExistsAccountCPF, (req, res) => {
   return res.status(201).send();
 
 })
+
+app.get('/statement', verifyIfExistsAccountCPF, (req, res) => { 
+
+  const customer = req.customer;
+
+  return res.json(customer.statement);
+
+});
+
+app.get('/statement/date', verifyIfExistsAccountCPF, (req, res) => { 
+
+  const customer = req.customer;
+  const { date } = req.query;
+
+  const dateFormated = new Date(date + " 00:00");
+
+  const statement = customer.statement.filter(
+    (statement) => (
+      statement.created_at.toDateString() === new Date(dateFormated).toDateString()
+    )
+  )
+
+  return res.json(statement);
+
+});
 
 app.listen(3333, () => { console.log('Server Started 🎉🎉🥳🥳'); });
